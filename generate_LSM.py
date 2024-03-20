@@ -21,17 +21,16 @@ def save_LSM():
     model.load_state_dict(torch.load(os.path.join('Result', 'AlexNet_LSM_0_1_FR', 'best.pth')))
 
     tensor_data = read_data.get_feature_data()
-    print('整个预测区域大小：' + str(tensor_data.shape))
+    print('The size of the whole region：' + str(tensor_data.shape))
     creat = read_data.creat_dataset(tensor_data, config['size'])
     data = creat.creat_new_tensor()
     images_list = []
     probs = []
     model.eval()
     with torch.no_grad():   
-        # 遍历扩展过边缘的数据图
         for i in range(creat.p, config["height"] + creat.p):
             for j in range(creat.p, config["width"] + creat.p):
-                # 读取因子数据块
+                # read factors
                 images_list.append(data[:, i - creat.p:i + creat.p + 1, j - creat.p:j + creat.p + 1].astype(np.float32))
                 if (i != creat.p and (i - creat.p) % config["Cutting_window"] == 0 and (j - creat.p)== config["width"] - 1) or ( 
                     (i - creat.p) == config["height"] - 1 and (j - creat.p) == config["width"] - 1):
